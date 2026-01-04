@@ -102,7 +102,6 @@ export default {
 
   watch: {
     open(newVal) {
-      // Search Dropdown open
       if (newVal) {
         this.dropDownOpening()
       } else {
@@ -147,17 +146,33 @@ export default {
       }
       document.body.style.overflow = 'hidden'
     },
+    
+    // UPDATED SEARCH LOGIC
     formSubmit() {
-      const search = this.summoner.split(' ').join('').replaceAll('+', ' ').replaceAll('#', '-')
-      if (search.length) {
+      let query = this.summoner.trim()
+      
+      if (query.length) {
+        // If the user didn't include a tagline (# or -), auto-append the region
+        if (!query.includes('#') && !query.includes('-')) {
+          query = `${query}-${this.selectedRegion.toUpperCase()}`
+        }
+
+        // Standardize the URL format (project uses '-' instead of '#')
+        const search = query
+          .split(' ')
+          .join('')
+          .replaceAll('+', ' ')
+          .replaceAll('#', '-')
+
         this.$emit('formSubmit', search, this.selectedRegion)
       }
     },
+
     getScrollbarWidth() {
       const outer = document.createElement('div')
       outer.style.visibility = 'hidden'
-      outer.style.overflow = 'scroll' // forcing scrollbar to appear
-      outer.style.msOverflowStyle = 'scrollbar' // needed for WinJS apps
+      outer.style.overflow = 'scroll'
+      outer.style.msOverflowStyle = 'scrollbar'
       document.body.appendChild(outer)
 
       const inner = document.createElement('div')
